@@ -17,7 +17,7 @@ def stats(tmpdir):
     return str(tmpdir)
 
 
-def test_phone_numbers_censored(input_dir, output_dir, stats):
+def test_dates_censored(input_dir, output_dir, stats):
     input_text = "John's birthday is on 15th August. Jane's birthday is on 25th July."
 
     if not os.path.exists("/Users/aishwaryatonpe/IdeaProjects/cis6930sp24-assignment1/temp/"):

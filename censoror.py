@@ -25,8 +25,18 @@ def process_file(file_path, output_directory, stats):
         with open(file_path, 'r', encoding='utf-8') as file:
             text = file.read()
 
-        nlp = spacy.load("en_core_web_sm")
+        # nlp = spacy.load("en_core_web_sm")
+
+
+        try:
+            nlp = spacy.load("en_core_web_sm")
+        except IOError:
+            print("SpaCy model not found. Downloading...")
+            spacy.cli.download("en_core_web_sm")
+            nlp = spacy.load("en_core_web_sm")
+
         doc = nlp(text)
+
         phone_number_pattern = re.compile(r'\b\d{3}[-.\s]?\d{3}[-.\s]?\d{4}\b')
         address_pattern = re.compile(r'\b\d{1,5}\s\w+\s\w+(\s\w+)?,\s\w+,\s\w+,\s\d{5}\b')
         date_pattern = re.compile(r'\b\d{2}/\d{2}/\d{4}\b')
