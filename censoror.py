@@ -109,6 +109,8 @@ def generate_stats(stats, redacted_texts, stats_output):
                 stats_file.write(f"File: {censored_file['file_path']}\n")
 
 def main():
+
+    print("OUTOUTOUTOUTOUOU")
     parser = argparse.ArgumentParser(description="Censor sensitive information in plain text documents.")
     parser.add_argument('--input', nargs='+', help="Input files using glob patterns.")
     parser.add_argument('--output', help="Output directory for censored files.")
