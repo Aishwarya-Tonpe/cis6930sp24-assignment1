@@ -17,7 +17,7 @@ def stats(tmpdir):
     return str(tmpdir)
 
 
-def test_phone_numbers_censored(input_dir, output_dir, stats):
+def test_names_censored(input_dir, output_dir, stats):
     input_text = "John's phone number is 555-222-1234. Jane's phone number is 555-665-5678. Please contact them."
     if not os.path.exists("/Users/aishwaryatonpe/IdeaProjects/cis6930sp24-assignment1/temp/"):
         os.makedirs("/Users/aishwaryatonpe/IdeaProjects/cis6930sp24-assignment1/temp/")

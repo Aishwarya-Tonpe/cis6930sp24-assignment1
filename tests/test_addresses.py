@@ -20,7 +20,7 @@ def stats(tmpdir):
     return str(tmpdir)
 
 
-def test_phone_numbers_censored(input_dir, output_dir, stats):
+def test_addresses_censored(input_dir, output_dir, stats):
     input_text = "This is the official address of Universty of Florida Reitz Union - 655 Reitz Union Dr, Gainesville, Florida 32611"
 
     if not os.path.exists("/Users/aishwaryatonpe/IdeaProjects/cis6930sp24-assignment1/temp/"):
