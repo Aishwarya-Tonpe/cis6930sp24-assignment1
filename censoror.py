@@ -84,7 +84,7 @@ def process_file(file_path, output_directory, stats):
     except Exception as e:
         print(f"Error processing file {file_path}: {e}", file=sys.stderr)
 
-def generate_stats(stats, stats_output):
+def generate_stats(stats, redacted_texts, stats_output):
     with open(stats_output, 'w', encoding='utf-8') as stats_file:
         stats_file.write(f"Total processed files: {stats['total_files']}\n\n")
         stats_file.write("Censored Terms:\n")
@@ -93,16 +93,11 @@ def generate_stats(stats, stats_output):
 
         stats_file.write("\nCensored Files:\n")
         for censored_file in stats['censored_files']:
-            stats_file.write(f"File: {censored_file['file_path']}\n")
-            stats_file.write("Censored Terms:\n")
-            for term, count in censored_file['terms'].items():
-                stats_file.write(f"{term.capitalize()}: {count}\n")
+            if isinstance(censored_file, str):  # Check if it's a string
+                stats_file.write(f"File: {censored_file}\n")
+            else:
+                stats_file.write(f"File: {censored_file['file_path']}\n")
 
-            stats_file.write("Censored Indices:\n")
-            for begin, end in zip(censored_file['begin_indices'], censored_file['end_indices']):
-                stats_file.write(f"Begin Index: {begin}, End Index: {end}\n")
-
-            stats_file.write("\n")
 def main():
     parser = argparse.ArgumentParser(description="Censor sensitive information in plain text documents.")
     parser.add_argument('--input', nargs='+', help="Input files using glob patterns.")
@@ -111,7 +106,7 @@ def main():
     parser.add_argument('--dates', action='store_true', help="Censor dates.")
     parser.add_argument('--phones', action='store_true', help="Censor phone numbers.")
     parser.add_argument('--address', action='store_true', help="Censor addresses.")
-    parser.add_argument('--stats', choices=['stderr', 'stdout', 'file'], default='stderr', help="Statistics output destination.")
+    parser.add_argument('--stats', type=str, default='stderr', help="Statistics output destination.")
 
     args = parser.parse_args()
 
@@ -139,18 +134,21 @@ def main():
 
     stats = {'total_files': 0, 'censored_files': [], 'censored_terms': defaultdict(int)}
 
+    redacted_texts = []  # Store redacted texts for stats
     for pattern in args.input:
         files = glob.glob(pattern)
         print("FILE", files)
         for file_path in files:
-            process_file(file_path, args.output, stats)
+            # process_file(file_path, args.output, stats)
+            redacted_text = process_file(file_path, args.output, stats)
+            redacted_texts.append(f"File: {file_path}\n{redacted_text}")
 
     if args.stats == 'stderr':
         print("Statistics:\n", stats, file=sys.stderr)
     elif args.stats == 'stdout':
         print("Statistics:\n", stats)
-    elif args.stats == 'file':
-        generate_stats(stats, 'stats_output.txt')
+    else:
+        generate_stats(stats, redacted_texts, args.stats)
 
 if __name__ == "__main__":
     main()
