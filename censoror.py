@@ -112,8 +112,9 @@ def main():
         sys.exit(1)
 
     if not args.output:
-        print("Please provide an output directory using --output flag.")
-        sys.exit(1)
+        args.output = 'files'  # Default output directory if not provided
+    elif not os.path.exists(args.output):
+        os.makedirs(args.output)
 
     entities_to_censor = []
     if args.names:
