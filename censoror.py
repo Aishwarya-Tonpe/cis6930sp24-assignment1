@@ -92,9 +92,17 @@ def generate_stats(stats, stats_output):
             stats_file.write(f"{term.capitalize()}: {count}\n")
 
         stats_file.write("\nCensored Files:\n")
-        for file_path in stats['censored_files']:
-            stats_file.write(file_path + '\n')
+        for censored_file in stats['censored_files']:
+            stats_file.write(f"File: {censored_file['file_path']}\n")
+            stats_file.write("Censored Terms:\n")
+            for term, count in censored_file['terms'].items():
+                stats_file.write(f"{term.capitalize()}: {count}\n")
 
+            stats_file.write("Censored Indices:\n")
+            for begin, end in zip(censored_file['begin_indices'], censored_file['end_indices']):
+                stats_file.write(f"Begin Index: {begin}, End Index: {end}\n")
+
+            stats_file.write("\n")
 def main():
     parser = argparse.ArgumentParser(description="Censor sensitive information in plain text documents.")
     parser.add_argument('--input', nargs='+', help="Input files using glob patterns.")
