@@ -111,10 +111,13 @@ def main():
         print("Please provide input files using --input flag.")
         sys.exit(1)
 
+    print("OUTOUTOUTOUTOUOU")
     if not args.output:
         args.output = 'files'  # Default output directory if not provided
     elif not os.path.exists(args.output):
         os.makedirs(args.output)
+
+    print("OUTOUTOUTOUTOUOU")
 
     entities_to_censor = []
     if args.names:
