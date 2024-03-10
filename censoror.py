@@ -6,6 +6,8 @@ import glob
 import sys
 from collections import defaultdict
 import pyap
+from transformers import AutoTokenizer, AutoModelForTokenClassification
+from transformers import pipeline
 # from spacy import 'en_core_web_sm'
 # import usaddress
 # from google.cloud import language_v1
@@ -74,8 +76,17 @@ def process_file(file_path, output_directory, stats):
         # names2 = [entity['word'] for entity in results if entity['entity'] == 'I-PER' or entity['entity'] == 'B-PER']
         # print("DADADDADADDADDADADADA", names2)
 
+
+        tokenizer = AutoTokenizer.from_pretrained('bert-base-cased')
+        model = AutoModelForTokenClassification.from_pretrained("ctrlbuzz/bert-addresses")
+        nlp2 = pipeline("ner", model=model, tokenizer=tokenizer)
+        example = "While Maria was representing Johnson & Associates at a conference in Spain, she mailed me a letter from her new office at 123 Elm St., Apt. 4B, Springfield, IL.",
+
+        # print("____________", nlp2(example))
+        addresses2 = [entity['word'] for entity in nlp2(text) if entity['entity'] == 'ADDRESS']
+        print(addresses2)
         # Redact sensitive information
-        redacted_text = redact_text(text, addresses + names + dates + date_matches + phones + phone_numbers)
+        redacted_text = redact_text(text, addresses + addresses2 + names + dates + date_matches + phones + phone_numbers)
 
         # Save redacted file
         file_name = os.path.basename(file_path)
@@ -83,7 +94,10 @@ def process_file(file_path, output_directory, stats):
         with open(output_path, 'w', encoding='utf-8') as redacted_file:
             redacted_file.write(redacted_text)
 
-        # Update statistics
+
+
+
+# Update statistics
         stats['total_files'] += 1
         stats['censored_files'].append(output_path)
         stats['censored_terms']['names'] += len(names)
