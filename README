@@ -1,12 +1,12 @@
-# Censoror
-## Author
-Aishwarya Tonpe
+Censoror
 
-## Overview
+Author: Aishwarya Tonpe
+
+Overview:
 
 Censoror is a command-line utility designed to redact sensitive information in plain text documents. It utilizes natural language processing and regular expressions to identify and censor names, dates, phone numbers, and addresses in the specified input files.
 
-## Features
+Features:
 
 - Redacts names, dates, phone numbers, and addresses in plain text documents.
 - Supports input files specified using glob patterns.
@@ -14,12 +14,12 @@ Censoror is a command-line utility designed to redact sensitive information in p
 - Allows customization of redaction types (names, dates, phones, addresses).
 - Outputs redacted files to a specified directory.
 
-## Requirements
+Requirements:
 
-- Python 3.x
-- Pipenv (for managing dependencies)
+- Python 3.11
+- Pipenv 
 
-## Installation and running
+Installation and running:
 
 1. Clone the repository
 
@@ -29,15 +29,14 @@ Censoror is a command-line utility designed to redact sensitive information in p
      pipenv install
 
 
-## Usage
+Usage
 
-### Basic Usage
+Basic Usage:
 
-```bash
 pipenv run python censoror.py --input '*.txt' --names --dates --phones --address --output 'files/' --stats stderr
-```
 
-### Options
+
+Options:
 
 - `--input`: Specify input files using glob patterns.
 - `--output`: Specify the output directory for censored files.
@@ -47,7 +46,7 @@ pipenv run python censoror.py --input '*.txt' --names --dates --phones --address
 - `--address`: Enable censorship of addresses.
 - `--stats`: Choose statistics output destination (`stderr`, `stdout`, or a file path).
 
-## Statistics Output
+Statistics Output:
 
 Statistics are displayed based on the specified `--stats` option.
 
@@ -55,58 +54,58 @@ Statistics are displayed based on the specified `--stats` option.
 - If `stdout` is chosen, statistics are printed to the standard output.
 - If a file path is specified, statistics are saved to the specified file.
 
-## Known Issues
+Known Issues:
 
 - No known issues at the moment.
 
-## Assumptions
+Assumptions:
 
 - The input files are in plain text format.
 - The script assumes UTF-8 encoding for input files.
 - The output directory is created if it does not exist.
 
 
-## Function Description for - Fetch/Download, Parse/Extract, create, Populate/Insert, Status/Print
+Function Description for - Fetch/Download, Parse/Extract, create, Populate/Insert, Status/Print:
 
-### `redact_text(text, entities, replacement_char='█')`
+1. `redact_text(text, entities, replacement_char='█')`
 
 This function takes the original text along with a list of entities to be redacted and replaces each occurrence of those entities with a specified replacement character (default is '█').
 It supports both string entities and SpaCy token entities.
 
-### `process_file(file_path, output_directory, stats)`
+2. `process_file(file_path, output_directory, stats)`
 
 This function reads a file specified by `file_path`, applies redaction to sensitive information, and saves the redacted content to an output file in the specified `output_directory`.
 It also updates the `stats` dictionary with information about the redaction process.
 
-### `generate_stats(stats, redacted_texts, stats_output)`
+3. `generate_stats(stats, redacted_texts, stats_output)`
 
 This function generates statistics based on the redaction process and writes them to an output file specified by `stats_output`.
 It includes the total number of processed files, counts of censored terms (names, dates, phones, addresses), and a list of censored files.
 
-### `main()`
+4. `main()`
 
 The main function parses command-line arguments using the `argparse` module and executes the redaction process based on the specified options.
 It initializes the statistics dictionary, processes input files, and prints or saves the statistics based on the chosen output destination.
 
-### Additional Functions (in the `main()` function):
+Additional Functions (in the `main()` function):
 
-#### `install_requirements()`
+1. `install_requirements()`
 
 This function is called during the script execution to ensure that required packages are installed using `pipenv`.
 
-#### `print_statistics(stats)`
+2. `print_statistics(stats)`
 
 This function prints the statistics to standard error if `stderr` is chosen as the output destination for statistics.
 
-#### `write_statistics(stats, stats_output)`
+3. `write_statistics(stats, stats_output)`
 
 This function writes the statistics to the specified output file if a file path is provided as the output destination for statistics.
 
-#### `create_output_directory(output_directory)`
+4. `create_output_directory(output_directory)`
 
 This function ensures that the specified output directory exists. If not, it creates the directory.
 
-## Test Cases Description -
+Test Cases Description:
 1. `test_phones.py` - The `test_phone_numbers_censored` function is a Pytest test designed to verify the correct functioning
 of the phone number redaction feature in the `process_file` function. The test sets up temporary input and
 output directories, creating a sample input file containing two phone numbers. The `process_file` function
