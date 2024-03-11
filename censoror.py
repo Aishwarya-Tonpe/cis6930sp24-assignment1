@@ -90,7 +90,7 @@ def process_file(file_path, output_directory, stats):
 
         # Save redacted file
         file_name = os.path.basename(file_path)
-        output_path = os.path.join(output_directory, file_name.replace('.txt', '.censored'))
+        output_path = os.path.join(output_directory, f"{file_name}.censored")
         with open(output_path, 'w', encoding='utf-8') as redacted_file:
             redacted_file.write(redacted_text)
 
