@@ -8,12 +8,8 @@ from collections import defaultdict
 import pyap
 from transformers import AutoTokenizer, AutoModelForTokenClassification
 from transformers import pipeline
-# from spacy import 'en_core_web_sm'
-# import usaddress
-# from google.cloud import language_v1
-# from transformers import pipeline
 
-def redact_text(text, entities, replacement_char='█'):
+def censor_text(text, entities, replacement_char='█'):
     for entity in entities:
         if isinstance(entity, str):
             text = text.replace(entity, replacement_char * len(entity))
@@ -26,9 +22,6 @@ def process_file(file_path, output_directory, stats):
     try:
         with open(file_path, 'r', encoding='utf-8') as file:
             text = file.read()
-
-        # nlp = spacy.load("en_core_web_sm")
-
 
         try:
             nlp = spacy.load("en_core_web_sm")
@@ -43,56 +36,32 @@ def process_file(file_path, output_directory, stats):
         address_pattern = re.compile(r'\b\d{1,5}\s\w+\s\w+(\s\w+)?,\s\w+,\s\w+,\s\d{5}\b')
         date_pattern = re.compile(r'\b\d{2}/\d{2}/\d{4}\b')
         name_pattern = re.compile(r'\b[A-Z][a-z]*\b')
-        # ner_pipeline = pipeline("ner", model="dbmdz/bert-large-cased-finetuned-conll03-english")
-        # client = language_v1.LanguageServiceClient()
-
 
         # Extract entities based on flags
         names = [ent for ent in doc.ents if ent.label_ == 'PERSON']
         dates = [ent for ent in doc.ents if ent.label_ == 'DATE']
-        # print("HELLO HELLO HELLO", dates)
         # phones = [ent for ent in doc.ents if ent.label_ == 'PHONE']
         phones = re.findall(phone_number_pattern, text)
         # addresses = [ent for ent in doc.ents if ent.label_ == 'ADDRESS']
         extract_addresses = pyap.parse(text, country='US')
         addresses = [str(address) for address in extract_addresses]
-        # print("7777", addresses)
-        # for address in addresses:
-        # shows found address
-        # print("ooooo", type(address))
-
 
         date_matches = re.findall(date_pattern, text)
         phone_numbers = re.findall(phone_number_pattern, text)
 
-
-        # document = language_v1.Document(content=text, type_=language_v1.Document.Type.PLAIN_TEXT)
-        # response = client.analyze_entities(document=document)
-
-        # names = [entity.name for entity in response.entities if entity.type_ == language_v1.Entity.Type.PERSON]
-        # results = ner_pipeline(text)
-
-        # Filter results to get only PERSON entities
-        # names2 = [entity['word'] for entity in results if entity['entity'] == 'I-PER' or entity['entity'] == 'B-PER']
-        # print("DADADDADADDADDADADADA", names2)
-
-
         tokenizer = AutoTokenizer.from_pretrained('bert-base-cased')
         model = AutoModelForTokenClassification.from_pretrained("ctrlbuzz/bert-addresses")
         nlp2 = pipeline("ner", model=model, tokenizer=tokenizer)
-        example = "While Maria was representing Johnson & Associates at a conference in Spain, she mailed me a letter from her new office at 123 Elm St., Apt. 4B, Springfield, IL.",
+        addresses_hf = [entity['word'] for entity in nlp2(text) if entity['entity'] == 'ADDRESS']
 
-        # print("____________", nlp2(example))
-        addresses2 = [entity['word'] for entity in nlp2(text) if entity['entity'] == 'ADDRESS']
-        print(addresses2)
-        # Redact sensitive information
-        redacted_text = redact_text(text, addresses + addresses2 + names + dates + date_matches + phones + phone_numbers)
+        # Censor sensitive information
+        censored_text = censor_text(text, addresses + addresses_hf + names + dates + date_matches + phones + phone_numbers)
 
         # Save redacted file
         file_name = os.path.basename(file_path)
         output_path = os.path.join(output_directory, f"{file_name}.censored")
         with open(output_path, 'w', encoding='utf-8') as redacted_file:
-            redacted_file.write(redacted_text)
+            redacted_file.write(censored_text)
 
 # Update statistics
         stats['total_files'] += 1
@@ -120,8 +89,6 @@ def generate_stats(stats, redacted_texts, stats_output):
                 stats_file.write(f"File: {censored_file['file_path']}\n")
 
 def main():
-
-    print("OUTOUTOUTOUTOUOU")
     parser = argparse.ArgumentParser(description="Censor sensitive information in plain text documents.")
     parser.add_argument('--input', nargs='+', help="Input files using glob patterns.")
     parser.add_argument('--output', help="Output directory for censored files.")
@@ -137,16 +104,9 @@ def main():
         print("Please provide input files using --input flag.")
         sys.exit(1)
 
-    print("OUTOUTOUTOUTOUOU")
-    # if not args.output:
-    #     args.output = 'files'  # Default output directory if not provided
-    # elif not \
     output_directory = args.output
-    print("*******", output_directory)
     if not os.path.exists(output_directory):
         os.makedirs(output_directory)
-
-    print("OUTOUTOUTOUTOUOU")
 
     entities_to_censor = []
     if args.names:
@@ -160,12 +120,11 @@ def main():
 
     stats = {'total_files': 0, 'censored_files': [], 'censored_terms': defaultdict(int)}
 
-    redacted_texts = []  # Store redacted texts for stats
+    redacted_texts = []
     for pattern in args.input:
         files = glob.glob(pattern)
         print("FILE", files)
         for file_path in files:
-            # process_file(file_path, args.output, stats)
             redacted_text = process_file(file_path, args.output, stats)
             redacted_texts.append(f"File: {file_path}\n{redacted_text}")
 
