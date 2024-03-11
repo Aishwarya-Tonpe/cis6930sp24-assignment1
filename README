@@ -21,23 +21,13 @@ Censoror is a command-line utility designed to redact sensitive information in p
 
 ## Installation and running
 
-1. Clone the repository:
-
-   ```bash
-   git clone https://github.com/your_username/Censoror.git
-   ```
+1. Clone the repository
 
 2. Navigate to the project directory:
 
-   ```bash
-   cd Censoror
-   ```
-
 3. Install dependencies using Pipenv:
+     pipenv install
 
-   ```bash
-   pipenv install
-   ```
 
 ## Usage
 
