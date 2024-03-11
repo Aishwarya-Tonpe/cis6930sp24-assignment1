@@ -94,9 +94,6 @@ def process_file(file_path, output_directory, stats):
         with open(output_path, 'w', encoding='utf-8') as redacted_file:
             redacted_file.write(redacted_text)
 
-
-
-
 # Update statistics
         stats['total_files'] += 1
         stats['censored_files'].append(output_path)
@@ -141,9 +138,10 @@ def main():
         sys.exit(1)
 
     print("OUTOUTOUTOUTOUOU")
-    if not args.output:
-        args.output = 'files'  # Default output directory if not provided
-    elif not os.path.exists(args.output):
+    # if not args.output:
+    #     args.output = 'files'  # Default output directory if not provided
+    # elif not \
+    if not os.path.exists(args.output):
         os.makedirs(args.output)
 
     print("OUTOUTOUTOUTOUOU")
