@@ -141,8 +141,10 @@ def main():
     # if not args.output:
     #     args.output = 'files'  # Default output directory if not provided
     # elif not \
-    if not os.path.exists(args.output):
-        os.makedirs(args.output)
+    output_directory = args.output
+    print("*******", output_directory)
+    if not os.path.exists(output_directory):
+        os.makedirs(output_directory)
 
     print("OUTOUTOUTOUTOUOU")
 
